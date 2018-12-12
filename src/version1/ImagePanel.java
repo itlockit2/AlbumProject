@@ -1,9 +1,12 @@
 package version1;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -11,7 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.swing.Box;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -21,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 // ImagePanel 
@@ -30,7 +34,7 @@ public class ImagePanel extends JPanel {
 	ImageIcon fileDeleteButton = new ImageIcon("images/fileDeleteButton.png");
 	ImageIcon fileDeleteEnterButton = new ImageIcon("images/fileDeleteEnterButton.png");
 
-	static String homeDirectory = "C:\\Users\\RNC\\eclipse-workspace\\album\\userImages";
+	static String homeDirectory = "userImages";
 	static File imageFolder = new File(homeDirectory);
 	static public String[] imageList = imageFolder.list();
 
@@ -39,6 +43,8 @@ public class ImagePanel extends JPanel {
 	JButton deleteFileBtn;
 	JScrollPane scroll;
 	JoinPanel joinPanel = new JoinPanel();
+	
+	String selectFileName;
 
 	// ImagePanel 생성자
 	public ImagePanel() {
@@ -69,7 +75,7 @@ public class ImagePanel extends JPanel {
 
 	public void rePaint() {
 
-		homeDirectory = "C:\\Users\\RNC\\eclipse-workspace\\album\\userImages";
+		homeDirectory = "userImages";
 		imageFolder = new File(homeDirectory);
 		imageList = imageFolder.list();
 		remove(scroll);
@@ -103,27 +109,14 @@ public class ImagePanel extends JPanel {
 			deleteFileBtn.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mousePressed(MouseEvent e) {
-					JFileChooser chooser = new JFileChooser();
-
-					chooser.setAcceptAllFileFilterUsed(false);
-					FileNameExtensionFilter PNGFilter = new FileNameExtensionFilter("PNG & JPG File", "png", "jpg");
-					chooser.addChoosableFileFilter(PNGFilter);
-
-					int ret = chooser.showOpenDialog(null);
-
-					if (ret != JFileChooser.APPROVE_OPTION) {
-						JOptionPane.showMessageDialog(null, "Not Choose File Path", "Warning",
-								JOptionPane.WARNING_MESSAGE);
+					int ret = JOptionPane.showConfirmDialog(null, selectFileName + " 파일을 삭제하시겠습니까?", "삭제", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+					if(ret != JOptionPane.OK_OPTION) {
 						return;
+					} else {
+						File tempFile = new File(homeDirectory + "\\" + selectFileName);
+						tempFile.delete();
+						rePaint();
 					}
-
-					String filePath = chooser.getSelectedFile().getPath();
-					System.out.println(filePath);
-
-					String ChoosedFile = chooser.getSelectedFile().getName();
-
-					fileCopy(filePath, homeDirectory + "\\" + ChoosedFile);
-					rePaint();
 				}
 			});
 
@@ -192,13 +185,34 @@ public class ImagePanel extends JPanel {
 
 			add(imageLabel, BorderLayout.CENTER);
 			add(fileName, BorderLayout.SOUTH);
+			setFocusable(true);
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					requestFocus();
+					selectFileName = imagePath;
+				}
+			});
+			
+			addFocusListener(new FocusAdapter() {
+				@Override
+				public void focusGained(FocusEvent e) {
+					Border border = BorderFactory.createLineBorder(Color.RED, 3);
+					setBorder(border);
+					selectFileName = imagePath;
+				}
+				@Override
+				public void focusLost(FocusEvent e) {
+					setBorder(null);
+				}
+			});
 		}
 	}
 
 	// 합친(Image와 filename)Panel을 그려주는 Panel
 	class JoinPanel extends JPanel {
 		// 200개를 생성하기 위해 배열 생성
-		ImageListPanel listPanel[] = new ImageListPanel[200];
+		ImageListPanel listPanel[] = new ImageListPanel[imageList.length];
 
 		// GridLayout으로 설정
 		JoinPanel() {

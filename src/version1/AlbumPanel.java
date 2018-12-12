@@ -47,11 +47,13 @@ public class AlbumPanel extends JPanel {
 	JPanel thirdPanel;
 	// CardLayout 객체 생성
 	CardLayout card = new CardLayout();
-
+	JPanel cardPanel;
 	int coverImageXPoint[][] = new int[4][19];
 	int coverImageYPoint[][] = new int[4][19];
 	String randomImage[];
-	Color themeColor;
+	
+	String mainTitle = "본 제목 입니다.";
+	String subTitle = "부 제목 입니다.";
 	
 
 	public AlbumPanel() {
@@ -64,10 +66,16 @@ public class AlbumPanel extends JPanel {
 		// BorderLayout 설정
 		setLayout(new BorderLayout());
 		// cardLayout 레이아웃을 가진 객체 생성
-		JPanel cardPanel = new cardPanel();
+		cardPanel = new cardPanel();
 		// cardPanel을 추가, BorderLayout CENTER
 		add(cardPanel, BorderLayout.CENTER);
-
+	}
+	public void rePaint() {
+		remove(cardPanel);
+		cardPanel = new cardPanel();
+		add(cardPanel, BorderLayout.CENTER);
+		repaint();
+		revalidate();
 	}
 
 	// cardLayout을 가진 cardPanel 클래스
@@ -91,8 +99,8 @@ public class AlbumPanel extends JPanel {
 
 	// 첫 번째 화면
 	class FirstPanel extends JPanel {
-		JLabel mainTitleLabel = new JLabel("본 제목 입니다.");
-		JLabel subTitleLabel = new JLabel("부제목 입니다.");
+		JLabel mainTitleLabel = new JLabel(mainTitle);
+		JLabel subTitleLabel = new JLabel(subTitle);
 		FirstContentPanel mainPanel = new FirstContentPanel();
 
 		FirstPanel() {
@@ -115,14 +123,10 @@ public class AlbumPanel extends JPanel {
 			add(rightButtonPanel, BorderLayout.EAST);
 		}
 
-		public void ChangeBackgroundColor(Color color) {
-			mainPanel.setBackground(color);
-		}
-
 		class FirstContentPanel extends JPanel {
 			public FirstContentPanel() {
 				setLayout(null);
-				setBackground(MainFrame.MAINCOLOR);
+				setBackground(MainFrame.SECOND_COLOR);
 				add(mainTitleLabel);
 				add(subTitleLabel);
 				mainTitleLabel.setBounds(78, 252, 1366, 40);
@@ -212,7 +216,8 @@ public class AlbumPanel extends JPanel {
 					public void mousePressed(MouseEvent e) {
 						String str = JOptionPane.showInputDialog(null, "제목을 입력하세요");
 						if (str != null) {
-							mainTitleLabel.setText(str);
+							mainTitle = str;
+							mainTitleLabel.setText(mainTitle);
 						}
 					}
 				});
@@ -222,7 +227,8 @@ public class AlbumPanel extends JPanel {
 					public void mousePressed(MouseEvent e) {
 						String str = JOptionPane.showInputDialog(null, "부제목을 입력하세요");
 						if (str != null) {
-							subTitleLabel.setText(str);
+							subTitle = str;
+							subTitleLabel.setText(subTitle);
 						}
 					}
 				});
@@ -231,11 +237,12 @@ public class AlbumPanel extends JPanel {
 					// 버튼 입력 시 cardLayout에 입력 된 다음 판넬로 넘어가도록 함
 					public void mousePressed(MouseEvent e) {
 						JColorChooser chooser = new JColorChooser();
-
-						themeColor = chooser.showDialog(null, "배경화면 색을 설정하세요", Color.RED);
-						if (themeColor != null) {
-							ChangeBackgroundColor(themeColor);
+						
+						Color tempcolor  = chooser.showDialog(null, "배경화면 색을 설정하세요", Color.RED);
+						if (tempcolor != null) {
+							MainFrame.changeSecondColor(tempcolor);
 							System.out.println("change");
+							rePaint();
 						}
 					}
 				});
@@ -289,7 +296,7 @@ public class AlbumPanel extends JPanel {
 				selectLabel.setBounds(select.x,select.y,select.width,select.height);
 				add(selectLabel);
 			}
-			setBackground(MainFrame.MAINCOLOR);		
+			setBackground(MainFrame.SECOND_COLOR);		
 			
 		}
 	}

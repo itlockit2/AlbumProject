@@ -26,8 +26,13 @@ public class MainFrame extends JFrame {
 	int mouseX;
 	int mouseY;
 	static Color MAINCOLOR = new Color(251, 132, 136);
+	static Color SECOND_COLOR = new Color(255, 204, 204);
 	static Font mainTitleFont;
 	static Font subTitleFont;
+
+	public static void changeSecondColor(Color color) {
+		SECOND_COLOR = color;
+	}
 
 	public MainFrame() {
 
@@ -91,9 +96,12 @@ public class MainFrame extends JFrame {
 		// Frame에 JTabbedPane 추가
 		add(pane, BorderLayout.CENTER);
 		setSize(1366, 768);
+		setLocationRelativeTo(null);
+		setResizable(true);
+		// 메뉴바가 보이지 않게끔 설정
+		setUndecorated(true);
 		setVisible(true);
 
-		setLocationRelativeTo(null);
 	}
 
 	public static void main(String args[]) {
