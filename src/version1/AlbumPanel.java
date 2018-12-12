@@ -183,7 +183,7 @@ public class AlbumPanel extends JPanel {
 				for (int i = 0; i < 4; i++) {
 					for (int j = 0; j < 19; j++) {
 						
-						ImageIcon imageIcon = new ImageIcon(ImagePanel.homeDirectory + "\\" + randomImage[imageCount++]);
+						ImageIcon imageIcon = new ImageIcon(ImagePanel.homeDirectory + "\\" + randomImage[imageCount++%imageSize]);
 						Image image = imageIcon.getImage();
 						Image newimg = image.getScaledInstance(47, 47,  java.awt.Image.SCALE_SMOOTH);
 						imageIcon = new ImageIcon(newimg);
@@ -200,12 +200,6 @@ public class AlbumPanel extends JPanel {
 						add(img);
 					}
 				}
-				addMouseListener(new MouseAdapter() {
-					@Override
-					public void mousePressed(MouseEvent e) {
-						System.out.println(e.getX() + " , " + e.getY());
-					}
-				});
 			}
 		}
 
@@ -278,7 +272,6 @@ public class AlbumPanel extends JPanel {
 						Color tempcolor  = chooser.showDialog(null, "배경화면 색을 설정하세요", Color.RED);
 						if (tempcolor != null) {
 							MainFrame.changeSecondColor(tempcolor);
-							System.out.println("change");
 							rePaint();
 						}
 					}

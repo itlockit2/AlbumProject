@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
@@ -138,7 +139,6 @@ public class ImagePanel extends JPanel {
 					}
 
 					String filePath = chooser.getSelectedFile().getPath();
-					System.out.println(filePath);
 
 					String ChoosedFile = chooser.getSelectedFile().getName();
 
@@ -175,7 +175,12 @@ public class ImagePanel extends JPanel {
 			setLayout(new BorderLayout());
 			// Label의 중앙 정렬
 			ImageIcon imageIcon = new ImageIcon(homeDirectory + "\\" + imagePath);
+			Image image = imageIcon.getImage();
+			Image newimg = image.getScaledInstance(200, 200,  java.awt.Image.SCALE_SMOOTH);
+			imageIcon = new ImageIcon(newimg);
+			
 			JLabel imageLabel = new JLabel(imageIcon);
+			
 			imageLabel.setPreferredSize(new Dimension(200, 200));
 			// Image를 그려주는 Panel 및 fileName Panel 추가
 
