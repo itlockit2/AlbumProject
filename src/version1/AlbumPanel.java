@@ -9,8 +9,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
@@ -28,6 +28,7 @@ public class AlbumPanel extends JPanel {
 
 	// 왼쪽 버튼 기본 이미지
 	ImageIcon leftButtonBasicImage = new ImageIcon("images/leftButtonBasicImage.png");
+	ImageIcon leftButtonTansImage = new ImageIcon("images/leftButtonBasicTransImage.png");
 	// 왼쪽 버튼 Enter 이미지
 	ImageIcon leftButtonEnterImage = new ImageIcon("images/leftButtonEnterImage.png");
 	// 오른쪽 버튼 기본 이미지
@@ -40,7 +41,11 @@ public class AlbumPanel extends JPanel {
 	ImageIcon changeBackgroundEnterImage = new ImageIcon("images/changeBackgroundEnterButton.png");
 	ImageIcon subTitleButtonImage = new ImageIcon("images/subtitleBasicButton.png");
 	ImageIcon subTitleEnterImage = new ImageIcon("images/subtitleEmterButton.png");
-
+	ImageIcon randomButtonBasicImage = new ImageIcon("images/randomButton.png");
+	ImageIcon randomButtonEnterImage = new ImageIcon("images/randomEnterButton.png");
+	ImageIcon changeLayoutButtonImage = new ImageIcon("images/changeLayoutButton.png");
+	ImageIcon changeLayoutEnterButtonImage = new ImageIcon("images/changeLayoutEnterButton.png");
+	
 	// CardLayout을 통해 변경할 Panel
 	JPanel firstPanel;
 	JPanel secondPanel;
@@ -48,15 +53,40 @@ public class AlbumPanel extends JPanel {
 	// CardLayout 객체 생성
 	CardLayout card = new CardLayout();
 	JPanel cardPanel;
-	int coverImageXPoint[][] = new int[4][19];
-	int coverImageYPoint[][] = new int[4][19];
+	
+	int layoutPointNum = 0;
 	String randomImage[];
+	ArrayList<LayoutPoint> layoutPoints;
 	
 	String mainTitle = "본 제목 입니다.";
 	String subTitle = "부 제목 입니다.";
-	
-
+	int coverImageXPoint[][] = new int[4][19];
+	int coverImageYPoint[][] = new int[4][19];;
 	public AlbumPanel() {
+		layoutPoints = new ArrayList<LayoutPoint>();
+		ImagePoint layoutImagePoints[] = {new ImagePoint(78,33,124,190),
+				new ImagePoint(212,33,257,390),
+				new ImagePoint(78,232,124,232),				
+				new ImagePoint(78,472,124,146),
+				new ImagePoint(212,432,257,188),				
+				new ImagePoint(508,33,126,175),
+				new ImagePoint(641,33,256,390),
+				new ImagePoint(508,223,126,200),
+				new ImagePoint(508,431,397,197)
+		};
+		ImagePoint layoutImagePoints2[] = {
+				new ImagePoint(66,23,135,191),
+				new ImagePoint(213,23,120,191),
+				new ImagePoint(341,23,125,191),				
+				new ImagePoint(66,222,135,104),
+				new ImagePoint(213,222,120,191),				
+				new ImagePoint(341,222,125,191),
+				new ImagePoint(66,424,267,211),
+				new ImagePoint(341,424,125,211),
+				new ImagePoint(486,23,460,612)
+		};
+		layoutPoints.add(new LayoutPoint(layoutImagePoints));
+		layoutPoints.add(new LayoutPoint(layoutImagePoints2));
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 19; j++) {
 				coverImageXPoint[i][j] = 10 + j * 50;
@@ -88,12 +118,10 @@ public class AlbumPanel extends JPanel {
 			// 각각의 Panel 객체 생성
 			firstPanel = new FirstPanel();
 			secondPanel = new SecondPanel();
-			thirdPanel = new ThirdPanel();
 
 			// CardLayout에 Panel 추가
 			add(firstPanel, "first");
 			add(secondPanel, "second");
-			add(thirdPanel, "third");
 		}
 	}
 
@@ -183,16 +211,25 @@ public class AlbumPanel extends JPanel {
 
 		class LeftButtonPanel extends JPanel {
 			// 화면 제어를 할 Button들
-			JButton leftButton = new JButton(leftButtonBasicImage);
-
+			JButton leftButton = new JButton(leftButtonTansImage);
+			JButton randomButton = new JButton(randomButtonBasicImage);
 			public LeftButtonPanel() {
 				setLayout(new GridLayout(0, 1));
 				setButtonUI(leftButton);
-				setButtonEvent(leftButton, leftButtonBasicImage, leftButtonEnterImage);
+				setButtonUI(randomButton);
+				setButtonEvent(leftButton, leftButtonTansImage, leftButtonEnterImage);
+				setButtonEvent(randomButton, randomButtonBasicImage, randomButtonEnterImage);
 				setBackground(MainFrame.MAINCOLOR);
 				Border border = BorderFactory.createLineBorder(Color.BLACK, 3);
 				setBorder(border);
 				add(leftButton);
+				randomButton.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						rePaint();
+					}
+				});
+				add(randomButton);
 			}
 		}
 
@@ -268,17 +305,9 @@ public class AlbumPanel extends JPanel {
 		}
 	}
 	class ImageDrawPanel extends JPanel{
-		ImagePoint imagePoint[] = {new ImagePoint(78,33,124,190),
-				new ImagePoint(212,33,257,390),
-				new ImagePoint(78,232,124,232),				
-				new ImagePoint(78,472,124,146),
-				new ImagePoint(212,432,257,188),				
-				new ImagePoint(508,33,126,175),
-				new ImagePoint(641,33,256,390),
-				new ImagePoint(508,223,126,200),
-				new ImagePoint(508,431,397,197)
-		};
+		
 		public ImageDrawPanel() {
+			ImagePoint imagePoint[] = layoutPoints.get(layoutPointNum).layoutImagePoints;
 			// 클릭 시 마우스 이벤트 처리
 			setLayout(null);
 			int imageCount = 0;
@@ -321,9 +350,12 @@ public class AlbumPanel extends JPanel {
 			JButton leftButton = new JButton(leftButtonBasicImage);
 
 			public LeftButtonPanel() {
+				JButton randomButton = new JButton(randomButtonBasicImage);
 				setLayout(new GridLayout(0, 1));
+				setButtonUI(randomButton);
 				setButtonUI(leftButton);
 				setButtonEvent(leftButton, leftButtonBasicImage, leftButtonEnterImage);
+				setButtonEvent(randomButton, randomButtonBasicImage, randomButtonEnterImage);
 				setBackground(MainFrame.MAINCOLOR);
 				Border border = BorderFactory.createLineBorder(Color.BLACK, 3);
 				setBorder(border);
@@ -335,25 +367,45 @@ public class AlbumPanel extends JPanel {
 						card.previous(SecondPanel.this.getParent());
 					}
 				});
+				randomButton.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						rePaint();
+						card.show(cardPanel, "second");
+						
+					}
+				});
+				add(randomButton);
 			}
 		}
 
 		class RightButtonPanel extends JPanel {
 			// 화면 제어를 할 Button들
 			JButton rightButton = new JButton(rightButtonBasicImage);
-
+			JButton layoutChangeButton = new JButton(changeLayoutButtonImage);
 			public RightButtonPanel() {
+				setButtonEvent(layoutChangeButton, changeLayoutButtonImage , changeLayoutEnterButtonImage );
 				setButtonEvent(rightButton, rightButtonBasicImage, rightButtonEnterImage);
 				setButtonUI(rightButton);
+				setButtonUI(layoutChangeButton);
 				setLayout(new GridLayout(0, 1));
 				setBackground(MainFrame.MAINCOLOR);
 				Border border = BorderFactory.createLineBorder(Color.BLACK, 3);
 				setBorder(border);
+				add(layoutChangeButton);
 				add(rightButton);
 
 				rightButton.addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {
 						card.next(SecondPanel.this.getParent());
+					}
+				});
+				layoutChangeButton.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						layoutPointNum = (layoutPointNum + 1) % 2;
+						rePaint();
+						card.show(cardPanel, "second");
 					}
 				});
 			}
@@ -362,65 +414,8 @@ public class AlbumPanel extends JPanel {
 			return imagePanel;
 		}
 	}
+	
 
-	class ThirdPanel extends JPanel {
-		LeftButtonPanel leftButtonPanel = new LeftButtonPanel();
-		RightButtonPanel rightButtonPanel = new RightButtonPanel();
-
-		ThirdPanel() {
-
-			// 버튼의 위치가 일정하지 않으므로 일일이 지정
-			setLayout(new BorderLayout());
-			// 클릭 시 마우스 이벤트 처리
-
-			// 판넬에 버튼 추가
-			add(leftButtonPanel, BorderLayout.WEST);
-			add(rightButtonPanel, BorderLayout.EAST);
-		}
-
-		class LeftButtonPanel extends JPanel {
-			// 화면 제어를 할 Button들
-			JButton leftButton = new JButton(leftButtonBasicImage);
-
-			public LeftButtonPanel() {
-				setLayout(new GridLayout(0, 1));
-				setButtonUI(leftButton);
-				setButtonEvent(leftButton, leftButtonBasicImage, leftButtonEnterImage);
-				setBackground(MainFrame.MAINCOLOR);
-				Border border = BorderFactory.createLineBorder(Color.BLACK, 3);
-				setBorder(border);
-				add(leftButton);
-
-				// 클릭 시 마우스 이벤트 처리
-				leftButton.addMouseListener(new MouseAdapter() {
-					public void mousePressed(MouseEvent e) {
-						card.previous(ThirdPanel.this.getParent());
-					}
-				});
-			}
-		}
-
-		class RightButtonPanel extends JPanel {
-			// 화면 제어를 할 Button들
-			JButton rightButton = new JButton(rightButtonBasicImage);
-
-			public RightButtonPanel() {
-				setButtonEvent(rightButton, rightButtonBasicImage, rightButtonEnterImage);
-				setButtonUI(rightButton);
-				setLayout(new GridLayout(0, 1));
-				setBackground(MainFrame.MAINCOLOR);
-				Border border = BorderFactory.createLineBorder(Color.BLACK, 3);
-				setBorder(border);
-				add(rightButton);
-
-				rightButton.addMouseListener(new MouseAdapter() {
-					public void mousePressed(MouseEvent e) {
-						card.next(ThirdPanel.this.getParent());
-					}
-				});
-			}
-		}
-	}
 	class ImagePoint{
 		int x;
 		int y;
@@ -431,6 +426,16 @@ public class AlbumPanel extends JPanel {
 			this.y = y;
 			this.width = width;
 			this.height = height;
+		}
+	}
+	
+	class LayoutPoint{
+		public ImagePoint layoutImagePoints[];
+		public LayoutPoint(ImagePoint[]layoutImagePoints) {
+			this.layoutImagePoints = layoutImagePoints;
+		}
+		public ImagePoint[] getlayoutPoints() {
+			return layoutImagePoints;
 		}
 	}
 
